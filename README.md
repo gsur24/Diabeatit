@@ -40,9 +40,9 @@ Commit staged files to your branch using
 git commit -m "commit message"
 ```
 
-Push changes from your local repository to remote repository
+Push changes from your local repository to github repository
 ```
-git push
+git push origin branch_name
 ```
 
 Submit a pull request from your branch to the dev branch. One of the core tech team members will review your changes and accept your pull request once satisfactory.
