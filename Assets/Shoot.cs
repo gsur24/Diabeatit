@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class Shoot : MonoBehaviour {
 	public GameObject ball; //reference to the ball prefab, set in editor
-	private Vector3 throwSpeed = new Vector3(0, 12, 5); //This value is a sure basket, we'll modify this using the forcemeter
+	private Vector3 perfectThrow = new Vector3(0, 12, 7); //This value is a sure basket, we'll modify this using the forcemeter
+	private Vector3 throwSpeed;
 	public Vector3 ballPos; //starting ball position
 	private bool thrown = false; //if ball has been thrown, prevents 2 or more balls
 	private GameObject ballClone; //we don't use the original prefab
@@ -21,11 +22,16 @@ public class Shoot : MonoBehaviour {
 
 	public Text gameOver; //game over text
 
+	private Vector3 initGravity = new Vector3(0, -10, 3.66f);
+	private Vector3 thrownGravity = new Vector3(0, -10, 1.5f);
+
 	// Use this for initialization
 	void Start () {
 		/* Increase Gravity */
-		Physics.gravity = new Vector3(0, -10, 3.66f);
+		Physics.gravity = initGravity;
 		gameOver.gameObject.SetActive (false);
+
+		throwSpeed = perfectThrow;
 	}
 	
 	// Update is called once per frame
@@ -33,21 +39,18 @@ public class Shoot : MonoBehaviour {
 		
 	}
 
-//	void DelayedDestroy(int delay, GameObject obj) {
-//		WaitForSecondsRealtime (delay);
-//		Destroy (obj);
-//	}
-
 	void DeleteBall() {
 		/* Remove Ball when it hits the floor */
 
-		if (ballClone != null && thrown) {// || elapse > 50)
+		if (ballClone != null && thrown) {
+			Physics.gravity = initGravity;
+
 			Rigidbody rb = ballClone.GetComponent<Rigidbody> ();
-			if (ballClone.transform.position.y < -2 || (rb.velocity.z < 0 && !rb.velocity.z.Equals(0))) {
+			if (ballClone.transform.position.y < -3 || rb.velocity.z < 0) {
 				Destroy (ballClone);
 				ball.SetActive (true);
 				thrown = false;
-				throwSpeed = new Vector3 (0, 10, 7);//Reset perfect shot variable
+				throwSpeed = perfectThrow;
 
 				/* Check if out of shots */
 				if (availableShots == 0) {
@@ -64,21 +67,22 @@ public class Shoot : MonoBehaviour {
 
 		if (Input.GetButton("Fire1") && !thrown && availableShots > 0)
 		{
+			Physics.gravity = thrownGravity;
+
 			thrown = true;
 			availableShots--;
 			availableShotsGO.text = availableShots.ToString();
 
 			ballClone = Instantiate(ball, ballPos, transform.rotation) as GameObject;
-			throwSpeed.y = throwSpeed.y + arrow.transform.position.x;
-			throwSpeed.z = throwSpeed.z + arrow.transform.position.x;
+			throwSpeed.y = throwSpeed.y + arrow.transform.position.x * Mathf.Sqrt(2);
+			throwSpeed.z = throwSpeed.z + arrow.transform.position.x * Mathf.Sqrt(2);
 			ball.SetActive (false);
 
 			ballClone.GetComponent<Rigidbody>().AddForce(throwSpeed, ForceMode.Impulse);
 		}
 	}
 
-	void FixedUpdate() {
-
+	void MovePowerMeter() {
 		/* Move Meter Arrow */
 
 		if (arrow.transform.position.x < 2.5f && right)
@@ -97,6 +101,11 @@ public class Shoot : MonoBehaviour {
 		{
 			right = true;
 		}
+	}
+
+	void FixedUpdate() {
+
+		MovePowerMeter ();
 
 		TakeShot ();
 
@@ -105,7 +114,8 @@ public class Shoot : MonoBehaviour {
 
 	void restart()
 	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+//		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		SceneManager.LoadScene("home");
 	}
 
 }
