@@ -12,7 +12,7 @@ public class LevelLoader : MonoBehaviour {
 
 		if (levelToLoad == "back") {
 			if (PreviousScene == null)
-				SceneManager.LoadScene ("main");
+				SceneManager.LoadScene ("home");
 			SceneManager.LoadScene (PreviousScene);
 		} else {
 			PreviousScene = SceneManager.GetActiveScene().name;
