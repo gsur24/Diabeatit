@@ -39,32 +39,21 @@ public class PlayerController : MonoBehaviour {
 	 
 	void Update(){
 
-
-		SetCountText ();
-		// fire bullet when space bar is pressed
-		if (Input.GetKeyDown ("space")/* || CrossPlatformInputManager.GetButton ("Shoot")*/) {
-
-			//instantiate the laser
-			GameObject laser1 = (GameObject)Instantiate (laser);
-
-			// set the lasers initial position
-			laser1.transform.position = laserPosition.transform.position;
-
-		}
 	}
 	void FixedUpdate () {
 
 		// fire bullets when the spacebar is pressed
         // Grabs input from the player through the keyboard
         // and stores in a float
-        float moveHorizontal = Input.GetAxis ("Horizontal");
         float moveVertical = Input.GetAxis ("Vertical");
-        Vector2 movement = new Vector2(moveHorizontal,moveVertical);
-        rb2d.AddForce(movement*speed);
-
+        Vector2 movement = new Vector2(0,moveVertical);
+		rb2d.velocity = speed * movement;
+	
+		/*
 		// Control player movement though joystick object
 		Vector2 moveVec = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
 		rb2d.AddForce(moveVec*speed);
+		*/
 	}
 
     // set the boolean variable to true whenever we touch another object
@@ -92,7 +81,6 @@ public class PlayerController : MonoBehaviour {
 
         }
     }
-
     public void SetCountText(){
 
 		countText.text = "count: " + getCount();
